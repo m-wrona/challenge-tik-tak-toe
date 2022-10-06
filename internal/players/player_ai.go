@@ -1,7 +1,8 @@
-package challenge_tik_tak_toe
+package players
 
 import (
 	"context"
+	"github/m-wrona/challenge-tik-tak-toe/internal/board"
 )
 
 const (
@@ -12,18 +13,21 @@ const (
 )
 
 type AiPlayer struct {
-	id PlayerID
+	id board.PlayerID
 }
 
-func (a AiPlayer) ID() PlayerID {
+func NewAiPlayer(id board.PlayerID) board.Player {
+	return &AiPlayer{id: id}
+}
+
+func (a AiPlayer) ID() board.PlayerID {
 	return a.id
 }
 
-func (a AiPlayer) NextMove(ctx context.Context, b Board) (int, error) {
+func (a AiPlayer) NextMove(ctx context.Context, b board.Board) (int, error) {
 	bestScore := aiScoreLost
-	aiNextMove := noMove
-	for _, coordinates := range boardWinningCoordinates {
-		validateCoordinates(coordinates)
+	aiNextMove := board.NoMove
+	for _, coordinates := range board.GetWinningCoordinates() {
 		score, nextMove := a.evaluateNextMove(b, coordinates)
 		if score > bestScore {
 			bestScore = score
@@ -33,14 +37,14 @@ func (a AiPlayer) NextMove(ctx context.Context, b Board) (int, error) {
 	return aiNextMove, nil
 }
 
-func (a AiPlayer) evaluateNextMove(b Board, coordinates []int) (score int, nextCoordinate int) {
+func (a AiPlayer) evaluateNextMove(b board.Board, coordinates []int) (score int, nextCoordinate int) {
 	free := 0
 	otherPlayer := 0
 	score = aiScoreDraw
-	nextCoordinate = noMove
+	nextCoordinate = board.NoMove
 	for _, c := range coordinates {
-		if b[c] == NoPlayer {
-			if nextCoordinate == noMove {
+		if b[c] == board.NoPlayer {
+			if nextCoordinate == board.NoMove {
 				nextCoordinate = c
 			}
 			free++
@@ -49,7 +53,7 @@ func (a AiPlayer) evaluateNextMove(b Board, coordinates []int) (score int, nextC
 			otherPlayer++
 		}
 	}
-	if score == aiScoreLost && nextCoordinate != noMove {
+	if score == aiScoreLost && nextCoordinate != board.NoMove {
 		if otherPlayer == 2 {
 			//try to prevent other player to win
 			score = aiScoreDisturb

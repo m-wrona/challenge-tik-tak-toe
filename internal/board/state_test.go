@@ -1,17 +1,18 @@
-package challenge_tik_tak_toe
+package board
 
 import (
 	"fmt"
 	"github.com/stretchr/testify/assert"
+
 	"testing"
 )
 
 func Test_State_ShouldMarkGameAsFinishedWithWinner(t *testing.T) {
-	for _, coordinates := range boardWinningCoordinates {
+	for _, coordinates := range GetWinningCoordinates() {
 		t.Run(fmt.Sprintf("%+v", coordinates), func(t *testing.T) {
 			var playerID PlayerID = 1
 			s := GameState{
-				board: newBoard(),
+				board: New(),
 			}
 			s.board[coordinates[0]] = playerID
 			s.board[coordinates[1]] = playerID
@@ -24,12 +25,12 @@ func Test_State_ShouldMarkGameAsFinishedWithWinner(t *testing.T) {
 }
 
 func Test_State_ShouldMarkGameAsOnGoing(t *testing.T) {
-	for _, coordinates := range boardWinningCoordinates {
+	for _, coordinates := range GetWinningCoordinates() {
 		t.Run(fmt.Sprintf("%+v", coordinates), func(t *testing.T) {
 			var playerID PlayerID = 1
 			var player2ID PlayerID = 2
 			s := GameState{
-				board: newBoard(),
+				board: New(),
 			}
 			s.board[coordinates[0]] = playerID
 			s.board[coordinates[1]] = playerID
@@ -43,7 +44,7 @@ func Test_State_ShouldMarkGameAsOnGoing(t *testing.T) {
 
 func Test_State_ShouldMarkGameAsDraw(t *testing.T) {
 	s := GameState{
-		board: newBoard(),
+		board: New(),
 	}
 	for idx := range s.board {
 		s.board[idx] = PlayerID(idx + 1)

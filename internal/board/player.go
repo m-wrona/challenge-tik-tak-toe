@@ -1,4 +1,4 @@
-package challenge_tik_tak_toe
+package board
 
 import (
 	"context"

@@ -1,30 +1,32 @@
-package challenge_tik_tak_toe
+package players_test
 
 import (
 	"context"
 	"github.com/stretchr/testify/assert"
+	"github/m-wrona/challenge-tik-tak-toe/internal/board"
+	"github/m-wrona/challenge-tik-tak-toe/internal/players"
 	"testing"
 	"time"
 )
 
 func Test_AI_ShouldReturnNoMove(t *testing.T) {
-	ai := AiPlayer{id: 1}
+	ai := players.NewAiPlayer(1)
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Millisecond)
 	defer cancel()
-	b := newBoard()
+	b := board.New()
 	for idx := range b {
-		b[idx] = PlayerID(2)
+		b[idx] = board.PlayerID(2)
 	}
 	m1, err := ai.NextMove(ctx, b)
 	assert.Nil(t, err, "couldn't make next move")
-	assert.Equal(t, noMove, m1, "no move is possible")
+	assert.Equal(t, board.NoMove, m1, "no move is possible")
 }
 
 func Test_AI_ShouldMarkFirstRow(t *testing.T) {
-	ai := AiPlayer{id: 1}
+	ai := players.NewAiPlayer(1)
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Millisecond)
 	defer cancel()
-	b := newBoard()
+	b := board.New()
 
 	m1, err := ai.NextMove(ctx, b)
 	assert.Nil(t, err, "couldn't make next move")
@@ -42,11 +44,11 @@ func Test_AI_ShouldMarkFirstRow(t *testing.T) {
 }
 
 func Test_AI_ShouldMarkSecondRow(t *testing.T) {
-	ai := AiPlayer{id: 1}
+	ai := players.NewAiPlayer(1)
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Millisecond)
 	defer cancel()
-	b := newBoard()
-	b[0] = PlayerID(2)
+	b := board.New()
+	b[0] = board.PlayerID(2)
 
 	m1, err := ai.NextMove(ctx, b)
 	assert.Nil(t, err, "couldn't make next move")
@@ -64,12 +66,12 @@ func Test_AI_ShouldMarkSecondRow(t *testing.T) {
 }
 
 func Test_AI_ShouldMarkThirdRow(t *testing.T) {
-	ai := AiPlayer{id: 1}
+	ai := players.NewAiPlayer(1)
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Millisecond)
 	defer cancel()
-	b := newBoard()
-	b[0] = PlayerID(2)
-	b[3] = PlayerID(2)
+	b := board.New()
+	b[0] = board.PlayerID(2)
+	b[3] = board.PlayerID(2)
 
 	m1, err := ai.NextMove(ctx, b)
 	assert.Nil(t, err, "couldn't make next move")
@@ -87,13 +89,13 @@ func Test_AI_ShouldMarkThirdRow(t *testing.T) {
 }
 
 func Test_AI_ShouldMarkFirstColumn(t *testing.T) {
-	ai := AiPlayer{id: 1}
+	ai := players.NewAiPlayer(1)
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Millisecond)
 	defer cancel()
-	b := newBoard()
+	b := board.New()
 	b[0] = ai.ID()
-	b[1] = PlayerID(2)
-	b[5] = PlayerID(2)
+	b[1] = board.PlayerID(2)
+	b[5] = board.PlayerID(2)
 
 	m2, err := ai.NextMove(ctx, b)
 	assert.Nil(t, err, "couldn't make next move")
@@ -106,13 +108,13 @@ func Test_AI_ShouldMarkFirstColumn(t *testing.T) {
 }
 
 func Test_AI_ShouldMarkSecondColumn(t *testing.T) {
-	ai := AiPlayer{id: 1}
+	ai := players.NewAiPlayer(1)
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Millisecond)
 	defer cancel()
-	b := newBoard()
+	b := board.New()
 	b[1] = ai.ID()
-	b[0] = PlayerID(2)
-	b[5] = PlayerID(2)
+	b[0] = board.PlayerID(2)
+	b[5] = board.PlayerID(2)
 
 	m2, err := ai.NextMove(ctx, b)
 	assert.Nil(t, err, "couldn't make next move")
@@ -125,19 +127,19 @@ func Test_AI_ShouldMarkSecondColumn(t *testing.T) {
 }
 
 func Test_AI_ShouldMarkThirdColumn(t *testing.T) {
-	ai := AiPlayer{id: 1}
+	ai := players.NewAiPlayer(1)
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Millisecond)
 	defer cancel()
-	b := newBoard()
-	b[0] = PlayerID(2)
-	b[1] = PlayerID(2)
+	b := board.New()
+	b[0] = board.PlayerID(2)
+	b[1] = board.PlayerID(2)
 	b[2] = ai.ID()
 
-	b[3] = PlayerID(2)
-	b[4] = PlayerID(2)
+	b[3] = board.PlayerID(2)
+	b[4] = board.PlayerID(2)
 
-	b[6] = PlayerID(2)
-	b[7] = PlayerID(2)
+	b[6] = board.PlayerID(2)
+	b[7] = board.PlayerID(2)
 
 	m2, err := ai.NextMove(ctx, b)
 	assert.Nil(t, err, "couldn't make next move")
@@ -150,19 +152,19 @@ func Test_AI_ShouldMarkThirdColumn(t *testing.T) {
 }
 
 func Test_AI_ShouldMarkFirstDiagonal(t *testing.T) {
-	ai := AiPlayer{id: 1}
+	ai := players.NewAiPlayer(1)
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Millisecond)
 	defer cancel()
-	b := newBoard()
+	b := board.New()
 	b[0] = ai.ID()
-	b[1] = PlayerID(2)
-	b[2] = PlayerID(2)
+	b[1] = board.PlayerID(2)
+	b[2] = board.PlayerID(2)
 
-	b[3] = PlayerID(2)
-	b[5] = PlayerID(2)
+	b[3] = board.PlayerID(2)
+	b[5] = board.PlayerID(2)
 
-	b[6] = PlayerID(2)
-	b[7] = PlayerID(2)
+	b[6] = board.PlayerID(2)
+	b[7] = board.PlayerID(2)
 
 	m2, err := ai.NextMove(ctx, b)
 	assert.Nil(t, err, "couldn't make next move")
@@ -175,16 +177,16 @@ func Test_AI_ShouldMarkFirstDiagonal(t *testing.T) {
 }
 
 func Test_AI_ShouldMarkSecondDiagonal(t *testing.T) {
-	ai := AiPlayer{id: 1}
+	ai := players.NewAiPlayer(1)
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Millisecond)
 	defer cancel()
-	b := newBoard()
-	b[0] = PlayerID(2)
-	b[1] = PlayerID(2)
-	b[3] = PlayerID(2)
-	b[5] = PlayerID(2)
-	b[7] = PlayerID(2)
-	b[8] = PlayerID(2)
+	b := board.New()
+	b[0] = board.PlayerID(2)
+	b[1] = board.PlayerID(2)
+	b[3] = board.PlayerID(2)
+	b[5] = board.PlayerID(2)
+	b[7] = board.PlayerID(2)
+	b[8] = board.PlayerID(2)
 
 	m1, err := ai.NextMove(ctx, b)
 	assert.Nil(t, err, "couldn't make next move")
@@ -202,12 +204,12 @@ func Test_AI_ShouldMarkSecondDiagonal(t *testing.T) {
 }
 
 func Test_AI_ShouldDisturbRowMarking(t *testing.T) {
-	ai := AiPlayer{id: 1}
+	ai := players.NewAiPlayer(1)
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Millisecond)
 	defer cancel()
-	b := newBoard()
-	b[0] = PlayerID(2)
-	b[1] = PlayerID(2)
+	b := board.New()
+	b[0] = board.PlayerID(2)
+	b[1] = board.PlayerID(2)
 
 	m1, err := ai.NextMove(ctx, b)
 	assert.Nil(t, err, "couldn't make next move")
@@ -215,12 +217,12 @@ func Test_AI_ShouldDisturbRowMarking(t *testing.T) {
 }
 
 func Test_AI_ShouldDisturbColumnMarking(t *testing.T) {
-	ai := AiPlayer{id: 1}
+	ai := players.NewAiPlayer(1)
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Millisecond)
 	defer cancel()
-	b := newBoard()
-	b[0] = PlayerID(2)
-	b[3] = PlayerID(2)
+	b := board.New()
+	b[0] = board.PlayerID(2)
+	b[3] = board.PlayerID(2)
 
 	m1, err := ai.NextMove(ctx, b)
 	assert.Nil(t, err, "couldn't make next move")
@@ -228,12 +230,12 @@ func Test_AI_ShouldDisturbColumnMarking(t *testing.T) {
 }
 
 func Test_AI_ShouldDisturbDiagonalMarking(t *testing.T) {
-	ai := AiPlayer{id: 1}
+	ai := players.NewAiPlayer(1)
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Millisecond)
 	defer cancel()
-	b := newBoard()
-	b[0] = PlayerID(2)
-	b[4] = PlayerID(2)
+	b := board.New()
+	b[0] = board.PlayerID(2)
+	b[4] = board.PlayerID(2)
 
 	m1, err := ai.NextMove(ctx, b)
 	assert.Nil(t, err, "couldn't make next move")

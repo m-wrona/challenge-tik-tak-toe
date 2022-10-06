@@ -1,4 +1,4 @@
-package challenge_tik_tak_toe
+package board
 
 import (
 	"context"
@@ -10,11 +10,23 @@ type GameState struct {
 	players []Player
 }
 
+func NewState(players ...Player) *GameState {
+	return &GameState{
+		board:   New(),
+		players: players,
+	}
+}
+
 func (s *GameState) copy() *GameState {
 	return &GameState{
 		board:   copyBoard(s.board),
 		players: s.players,
 	}
+}
+
+func (s *GameState) GetBoard() Board {
+	c := s.copy()
+	return c.board
 }
 
 func (s *GameState) Move(ctx context.Context, p Player) (*GameState, error) {
@@ -32,7 +44,9 @@ func (s *GameState) Move(ctx context.Context, p Player) (*GameState, error) {
 	if err != nil {
 		return nil, errors.Wrapf(err, "player %d couldn't make next move", p.ID())
 	}
-	if s.board[x] != NoPlayer {
+	if x >= len(s.board) {
+		return nil, errors.Errorf("Move not withing board: %d", x)
+	} else if s.board[x] != NoPlayer {
 		return nil, errors.Errorf(
 			"player %d cannot mark field %d since it's already taken by player %d",
 			p.ID(), x, s.board[x],
@@ -47,7 +61,7 @@ func (s *GameState) Move(ctx context.Context, p Player) (*GameState, error) {
 
 func (s *GameState) IsFinished() (PlayerID, bool) {
 	isFinished := true
-	for _, coordinates := range boardWinningCoordinates {
+	for _, coordinates := range winningCoordinates {
 		validateCoordinates(coordinates)
 		x := s.board[coordinates[0]]
 		y := s.board[coordinates[1]]
