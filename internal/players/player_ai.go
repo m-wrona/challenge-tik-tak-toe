@@ -3,6 +3,8 @@ package players
 import (
 	"context"
 	"github/m-wrona/challenge-tik-tak-toe/internal/board"
+	"hash/maphash"
+	"math/rand"
 )
 
 const (
@@ -12,32 +14,63 @@ const (
 	aiScoreDisturb = 10
 )
 
+type config struct {
+	randomMoves bool //random moves in best found strategies
+}
+
+type AiOption func(cfg *config)
+
 type AiPlayer struct {
-	id board.PlayerID
+	id   board.PlayerID
+	cfg  *config
+	rand *rand.Rand
 }
 
-func NewAiPlayer(id board.PlayerID) board.Player {
-	return &AiPlayer{id: id}
+// WithAIRandomMoves allows to make random moves among found best game strategies
+func WithAIRandomMoves(v bool) AiOption {
+	return func(cfg *config) {
+		cfg.randomMoves = v
+	}
 }
 
-func (a AiPlayer) ID() board.PlayerID {
+func NewAiPlayer(id board.PlayerID, opts ...AiOption) board.Player {
+	cfg := &config{}
+	for _, opt := range opts {
+		opt(cfg)
+	}
+	return &AiPlayer{
+		id:   id,
+		cfg:  cfg,
+		rand: rand.New(rand.NewSource(int64(new(maphash.Hash).Sum64()))),
+	}
+}
+
+func (a *AiPlayer) ID() board.PlayerID {
 	return a.id
 }
 
-func (a AiPlayer) NextMove(ctx context.Context, b board.Board) (int, error) {
+func (a *AiPlayer) NextMove(ctx context.Context, b board.Board) (int, error) {
 	bestScore := aiScoreLost
-	aiNextMove := board.NoMove
+	bestNextMoves := make([]int, 0)
 	for _, coordinates := range board.GetWinningCoordinates() {
 		score, nextMove := a.evaluateNextMove(b, coordinates)
 		if score > bestScore {
 			bestScore = score
-			aiNextMove = nextMove
+			bestNextMoves = []int{nextMove}
+		} else if score == bestScore {
+			bestNextMoves = append(bestNextMoves, nextMove)
 		}
 	}
-	return aiNextMove, nil
+	if len(bestNextMoves) == 0 {
+		return board.NoMove, nil
+	} else if !a.cfg.randomMoves {
+		return bestNextMoves[0], nil
+	}
+	randomMoveIdx := a.rand.Intn(len(bestNextMoves))
+	return bestNextMoves[randomMoveIdx], nil
 }
 
-func (a AiPlayer) evaluateNextMove(b board.Board, coordinates []int) (score int, nextCoordinate int) {
+func (a *AiPlayer) evaluateNextMove(b board.Board, coordinates []int) (score int, nextCoordinate int) {
 	free := 0
 	otherPlayer := 0
 	score = aiScoreDraw

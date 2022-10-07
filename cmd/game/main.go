@@ -13,7 +13,7 @@ import (
 
 func main() {
 	h := players.NewHumanPlayer(1, os.Stdin)
-	ai := players.NewAiPlayer(2)
+	ai := players.NewAiPlayer(2, players.WithAIRandomMoves(true))
 	s, err := internal.Start(h, ai)
 	if err != nil {
 		panic(err)
@@ -29,7 +29,7 @@ func main() {
 			if _, finished := s.IsFinished(); finished {
 				return
 			}
-			ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+			ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 			s, err = s.Move(ctx, p)
 			if err != nil {
 				panic(err)
