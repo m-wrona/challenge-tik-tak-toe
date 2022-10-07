@@ -241,3 +241,20 @@ func Test_AI_ShouldDisturbDiagonalMarking(t *testing.T) {
 	assert.Nil(t, err, "couldn't make next move")
 	assert.Equal(t, 8, m1, "unexpected disturb move")
 }
+
+func Test_AI_ShouldMakeWinningMoveOverDistrubOne(t *testing.T) {
+	ai := players.NewAiPlayer(1)
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Millisecond)
+	defer cancel()
+	b := board.New()
+	b[0] = ai.ID()
+	b[1] = ai.ID()
+
+	b[3] = board.PlayerID(2)
+	b[4] = board.PlayerID(2)
+
+	m1, err := ai.NextMove(ctx, b)
+	assert.Nil(t, err, "couldn't make next move")
+	assert.Equal(t, 2, m1, "should make winning move and finish the game")
+	assert.NotEqual(t, 5, m1, "should not make disturb move since player could win a game")
+}

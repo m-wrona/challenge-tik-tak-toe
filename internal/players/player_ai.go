@@ -9,7 +9,7 @@ const (
 	aiScoreLost    = -10
 	aiScoreDraw    = 0
 	aiScoreWin     = 10
-	aiScoreDisturb = 20
+	aiScoreDisturb = 10
 )
 
 type AiPlayer struct {
@@ -53,7 +53,9 @@ func (a AiPlayer) evaluateNextMove(b board.Board, coordinates []int) (score int,
 			otherPlayer++
 		}
 	}
-	if score == aiScoreLost && nextCoordinate != board.NoMove {
+	if otherPlayer == 0 && free == 1 {
+		score = aiScoreWin
+	} else if score == aiScoreLost && nextCoordinate != board.NoMove {
 		if otherPlayer == 2 {
 			//try to prevent other player to win
 			score = aiScoreDisturb

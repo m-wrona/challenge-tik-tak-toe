@@ -29,7 +29,7 @@ func main() {
 			if _, finished := s.IsFinished(); finished {
 				return
 			}
-			ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+			ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 			s, err = s.Move(ctx, p)
 			if err != nil {
 				panic(err)
