@@ -54,13 +54,16 @@ func (a AiPlayer) evaluateNextMove(b board.Board, coordinates []int) (score int,
 		}
 	}
 	if otherPlayer == 0 && free == 1 {
+		//certain win
 		score = aiScoreWin
 	} else if score == aiScoreLost && nextCoordinate != board.NoMove {
+		//lost or a draw
 		if otherPlayer == 2 {
 			//try to prevent other player to win
 			score = aiScoreDisturb
 		}
 	} else if free > 0 {
+		//still can win
 		score = aiScoreWin / free
 	}
 	return
